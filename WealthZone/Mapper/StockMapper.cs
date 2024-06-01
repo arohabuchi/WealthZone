@@ -16,6 +16,7 @@ namespace WealthZone.Mapper
                 LastDiv = stockModel.LastDiv,
                 MarketCap = stockModel.MarketCap,
                 Purchase = stockModel.Purchase,
+                comments = stockModel.Comments.Select(c=>c.ToCommentDto()).ToList(),
             };
         }
 

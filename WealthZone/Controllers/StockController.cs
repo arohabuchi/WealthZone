@@ -10,7 +10,7 @@ using WealthZone.Models;
 namespace WealthZone.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController] 
     public class StockController : ControllerBase
     {
         //private readonly AppDbContext context;
@@ -28,7 +28,7 @@ namespace WealthZone.Controllers
             stock.Select(s => s.ToStockDto());
             return Ok(stock);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var stock = await stockRepo.GetByIdAsync(id); 
@@ -42,15 +42,23 @@ namespace WealthZone.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(" Validation Error");
+            }
             var stockModel = stockDto.ToStockFromCreateDto();
             await stockRepo.CreateAsync(stockModel);
 
             return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
         }
-        [HttpPost]
-        [Route("{id}")]
+        [HttpPut]
+        [Route("{id:int}")]
         public async Task<IActionResult> Updates([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(" Validation Error");
+            }
             var stockModel = await stockRepo.UpdateStockAsync(id, updateDto);
             if (stockModel == null)
             {
@@ -60,7 +68,7 @@ namespace WealthZone.Controllers
             return Ok();
         }
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var stockModel =await stockRepo.DeleteAsync(id);

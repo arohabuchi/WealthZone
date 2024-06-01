@@ -36,18 +36,24 @@ namespace WealthZone.Data.Repository
 
         public async Task<List<Stock>> GetAllAsync()
         {
-            var AllStock =await context.stocks.ToListAsync();
+            var AllStock =await context.stocks.Include(c=>c.Comments).ToListAsync();
             return AllStock;
         }
 
         public async Task<Stock?> GetByIdAsync(int id)
         {
-            var stockDetails = await context.stocks.FindAsync(id);
+            var stockDetails = await context.stocks.Include(c => c.Comments).FirstOrDefaultAsync(i=>i.Id==id);
             if (stockDetails == null)
             {
                 return null;
             }
             return stockDetails;    
+        }
+
+        public Task<bool> StockExist(int id)
+        {
+            return context.stocks.AnyAsync(x=>x.Id==id);
+          
         }
 
         public async Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto stockDto)
