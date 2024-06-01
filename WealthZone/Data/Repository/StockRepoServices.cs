@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WealthZone.Data.Interface;
 using WealthZone.Dto.Stock;
+using WealthZone.Helpers;
 using WealthZone.Models;
 
 namespace WealthZone.Data.Repository
@@ -34,10 +35,32 @@ namespace WealthZone.Data.Repository
             return stockModel; // ?? null;
         }
 
-        public async Task<List<Stock>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(QueryObject query)
         {
-            var AllStock =await context.stocks.Include(c=>c.Comments).ToListAsync();
-            return AllStock;
+            var AllStock = context.stocks.Include(c=>c.Comments).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(query.CompanyName))
+            {
+                AllStock = AllStock.Where(c=>c.CompanyName.Contains(query.CompanyName));
+
+            }
+            if (!string.IsNullOrWhiteSpace(query.Symbol ))
+            {
+                AllStock = AllStock.Where(c => c.Symbol.Contains(query.Symbol));
+
+            }
+
+            /////
+            ///
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("symbol", StringComparison.OrdinalIgnoreCase))
+                {
+                    AllStock = query.IsDecsending ? AllStock.OrderByDescending(c => c.Symbol) : AllStock.OrderBy(c => c.Symbol);
+                }
+
+            }
+            var skipNumber = (query.PageNumber -  1) * query.PageSize;
+            return await AllStock.Skip(skipNumber).Take(query.PageSize ).ToListAsync();
         }
 
         public async Task<Stock?> GetByIdAsync(int id)

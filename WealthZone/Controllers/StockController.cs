@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WealthZone.Data;
 using WealthZone.Data.Interface;
 using WealthZone.Dto.Stock;
+using WealthZone.Helpers;
 using WealthZone.Mapper;
 using WealthZone.Models;
 
@@ -22,9 +23,9 @@ namespace WealthZone.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetALL([FromQuery] QueryObject query)
         {
-            var stock = await stockRepo.GetAllAsync();
+            var stock = await stockRepo.GetAllAsync(query);
             stock.Select(s => s.ToStockDto());
             return Ok(stock);
         }

@@ -1,11 +1,12 @@
 ﻿using WealthZone.Dto.Stock;
+using WealthZone.Helpers;
 using WealthZone.Models;
 
 namespace WealthZone.Data.Interface
 {
     public interface IStockRepo
     {
-        Task<List<Stock>> GetAllAsync();
+        Task<List<Stock>> GetAllAsync(QueryObject query);
         Task<Stock?> GetByIdAsync(int id);
         Task<Stock> CreateAsync(Stock stockModel);
         Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto stockDto);
