@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WealthZone.Models;
 
 namespace WealthZone.Data
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext:IdentityDbContext<ApplicationUser>
     {
         //public MyContext(DbContextOptions<MyContext> options) : base(options)
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
