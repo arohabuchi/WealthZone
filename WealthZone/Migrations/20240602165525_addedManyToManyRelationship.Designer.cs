@@ -12,8 +12,8 @@ using WealthZone.Data;
 namespace WealthZone.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240602093957_identityUser")]
-    partial class identityUser
+    [Migration("20240602165525_addedManyToManyRelationship")]
+    partial class addedManyToManyRelationship
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,20 @@ namespace WealthZone.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "fdd88188-3c0f-4da8-83eb-0726600dd83e",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "7f6b8ef0-eab5-421f-94e9-3db6674924b2",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -252,6 +266,21 @@ namespace WealthZone.Migrations
                     b.ToTable("comments");
                 });
 
+            modelBuilder.Entity("WealthZone.Models.Portfolio", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("StockId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppUserId", "StockId");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("portfolios");
+                });
+
             modelBuilder.Entity("WealthZone.Models.Stock", b =>
                 {
                     b.Property<int>("Id")
@@ -346,9 +375,35 @@ namespace WealthZone.Migrations
                     b.Navigation("stock");
                 });
 
+            modelBuilder.Entity("WealthZone.Models.Portfolio", b =>
+                {
+                    b.HasOne("WealthZone.Models.ApplicationUser", "appUser")
+                        .WithMany("Portfolios")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WealthZone.Models.Stock", "stock")
+                        .WithMany("Portfolios")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("appUser");
+
+                    b.Navigation("stock");
+                });
+
+            modelBuilder.Entity("WealthZone.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Portfolios");
+                });
+
             modelBuilder.Entity("WealthZone.Models.Stock", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Portfolios");
                 });
 #pragma warning restore 612, 618
         }
