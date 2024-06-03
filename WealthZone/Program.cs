@@ -88,6 +88,7 @@ builder.Services.AddAuthentication(options =>
 
 
 
+builder.Services.AddScoped<IPortfolioRepo, PortfolioRepoService>();
 builder.Services.AddScoped<IStockRepo, StockRepoServices>();
 builder.Services.AddScoped<ICommentRepo, CommentRepoServices>();
 builder.Services.AddScoped<ITokenService, TokenService>();

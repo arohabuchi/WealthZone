@@ -35,13 +35,13 @@ namespace WealthZone.Data.Repository
 
         public async Task<List<Comment>> GetAllAsync()
         {
-            var AllComment = await context.comments.ToListAsync();
+            var AllComment = await context.comments.Include(a=>a.AppUser).ToListAsync();
             return AllComment;
         }
 
        public async Task<Comment?> GetByIdAsync(int id)
         {
-            var commentDetails = await context.comments.FindAsync(id);
+            var commentDetails = await context.comments.Include(a => a.AppUser).FirstOrDefaultAsync(c=>c.Id==id);
             if (commentDetails == null)
             {
                 return null;

@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using WealthZone.Data.Interface;
 using WealthZone.Data;
 using WealthZone.Dto.Stock;
 using WealthZone.Mapper;
 using WealthZone.Dto.Comment;
+using Microsoft.AspNetCore.Identity;
+using WealthZone.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore;
+using WealthZone.Extension;
 
 namespace WealthZone.Controllers
 {
@@ -14,10 +18,12 @@ namespace WealthZone.Controllers
     {
         private readonly IStockRepo StockRepo;
         private readonly ICommentRepo commentRepo;
-        public CommentController(ICommentRepo _commentRepo, IStockRepo _stockRepo)
+        private readonly UserManager<ApplicationUser> userManager;
+        public CommentController(UserManager<ApplicationUser> _userManager, ICommentRepo _commentRepo, IStockRepo _stockRepo)
         {
             this.commentRepo = _commentRepo;
-            StockRepo = _stockRepo;  
+            this.StockRepo = _stockRepo; 
+            this.userManager = _userManager;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -48,7 +54,10 @@ namespace WealthZone.Controllers
             {
                 return BadRequest("stock does not exist");
             }
+            var username = User.GetUsername();
+            var appUser = await userManager.FindByNameAsync(username);
             var commentModel = commentDto.ToCommentFromCreate(stockId);
+            commentModel.AppUserId = appUser.Id;
             await commentRepo.CreateAsync(commentModel);
 
             return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());

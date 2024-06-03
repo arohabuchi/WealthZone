@@ -12,5 +12,8 @@ namespace WealthZone.Models
         public DateTime CreatedOn { get; set; } = DateTime.Now; 
         public int? StockId { get; set; }
         public Stock? stock { get; set; }
+        //one to one with user
+        public string AppUserId { get; set; }
+        public ApplicationUser AppUser { get; set;}
     }
 }

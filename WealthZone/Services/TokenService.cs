@@ -10,7 +10,6 @@ namespace WealthZone.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey key;
-        private readonly ILogger _logger;
         private readonly IConfiguration configuration;
 
         public TokenService(IConfiguration _configuration)

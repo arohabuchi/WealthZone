@@ -37,7 +37,7 @@ namespace WealthZone.Data.Repository
 
         public async Task<List<Stock>> GetAllAsync(QueryObject query)
         {
-            var AllStock = context.stocks.Include(c=>c.Comments).AsQueryable();
+            var AllStock = context.stocks.Include(c=>c.Comments).ThenInclude(c=>c.AppUser).AsQueryable();
             if (!string.IsNullOrWhiteSpace(query.CompanyName))
             {
                 AllStock = AllStock.Where(c=>c.CompanyName.Contains(query.CompanyName));
@@ -71,6 +71,11 @@ namespace WealthZone.Data.Repository
                 return null;
             }
             return stockDetails;    
+        }
+
+        public async Task<Stock?> GetBySymbolAsync(string symbol)
+        {
+            return await context.stocks.FirstOrDefaultAsync(c=>c.Symbol==symbol);
         }
 
         public Task<bool> StockExist(int id)

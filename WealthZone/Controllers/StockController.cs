@@ -28,8 +28,8 @@ namespace WealthZone.Controllers
         public async Task<IActionResult> GetALL([FromQuery] QueryObject query)
         {
             var stock = await stockRepo.GetAllAsync(query);
-            stock.Select(s => s.ToStockDto());
-            return Ok(stock);
+            var stockDto = stock.Select(s => s.ToStockDto()).ToList();
+            return Ok(stockDto);
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
